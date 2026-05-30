@@ -12,7 +12,7 @@ st.markdown("""
     h1, h2, h3 { color: #2c3e50 !important; font-weight: 700; }
     .step-box { background-color: #ffffff; padding: 25px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px; }
     div.stButton > button { border-radius: 6px !important; font-weight: bold !important; height: 45px; }
-    .size-badge { background-color: #1E88E5; color: white; padding: 4px 8px; border-radius: 4px; font-size: 14px; font-weight: bold; }
+    .size-badge { background-color: #2e7d32; color: white; padding: 4px 8px; border-radius: 4px; font-size: 14px; font-weight: bold; }
     </style>
 """, unsafe_allow_html=True)
 
@@ -36,85 +36,80 @@ st.progress(c_step / 5)
 st.write(f"**現在のステップ: {steps_names[c_step-1]}**")
 
 # =========================================================
-# 【ステップ 1】写真のアップロードと位置調整（ミリ数比率連動）
+# 【ステップ 1】写真のアップロードと位置調整（枠内での微調整）
 # =========================================================
 if c_step == 1:
     st.markdown('<div class="step-box">', unsafe_allow_html=True)
     st.subheader("📸 カレンダーに使用する写真をアップロードしてください")
     
-    # ユーザーがこれから選ぶ予定の暫定デザイン（ここで枠の縦横を決定する）
-    st.write("どのタイプのカレンダーを作りますか？（枠の向きが変わります）")
+    # 枠のタイプを最初に選んでもらう
+    st.write("作成するカレンダーの向きを選んでください：")
     temp_select = st.selectbox(
-        "カレンダーのタイプを選択",
+        "カレンダーのタイプ",
         ["横型カレンダー（台紙A または B用）", "縦型カレンダー（台紙C用）"],
         index=0 if data["template"] in ["A", "B"] else 1
     )
     
-    # 選択によって比率とミリ数の文字を自動切り替え
+    # 選んだ向きによって、絶対に崩れない固定の「仕上がり比率」を設定
     if "横型" in temp_select:
-        target_w_mm, target_h_mm = 260, 165
-        aspect_ratio = 260 / 165  # 約 1.575
-        size_text = "横 260ミリ × 縦 165ミリ（横型仕様）"
-        if data["template"] == "C": data["template"] = "A" # 安全のための初期化
+        target_w, target_h = 260, 165
+        aspect_ratio = 260 / 165  # 1.575
+        size_text = "横 260mm × 縦 165mm 固定枠"
+        if data["template"] == "C": data["template"] = "A"
     else:
-        target_w_mm, target_h_mm = 145, 245
-        aspect_ratio = 145 / 245  # 約 0.591
-        size_text = "横 145ミリ × 縦 245ミリ（縦型仕様）"
+        target_w, target_h = 145, 245
+        aspect_ratio = 145 / 245  # 0.591
+        size_text = "横 145mm × 縦 245mm 固定枠"
         data["template"] = "C"
         
-    st.markdown(f"🎨 設定される印刷サイズ: <span class='size-badge'>{size_text}</span>", unsafe_allow_html=True)
+    st.markdown(f"📐 仕上がり印刷枠: <span class='size-badge'>{size_text}</span>", unsafe_allow_html=True)
     st.write("")
     
     uploaded_file = st.file_uploader("スマホやPCから画像を選択（JPG / PNG）", type=["jpg", "jpeg", "png"])
     
     if uploaded_file:
         img = Image.open(uploaded_file).convert("RGB")
-        width, height = img.size
+        img_w, img_h = img.size
         
         st.write("---")
-        st.markdown("### ✂️ 写真の切り抜き調整")
-        st.caption("スライダーを動かして、カレンダーの指定枠に収まるように位置と大きさを調整してください。")
+        st.markdown("### ✂️ 写真のはめ込み微調整")
+        st.caption("指定枠（青い線）の中に写真をどう収めるか、感覚的に調整してください。はみ出た部分は自動でカットされます。")
         
-        # 枠線の計算（バグらない安全クッション付き）
-        min_dim = min(width, height)
+        # 1. 【拡大・縮小】写真のどのくらいの範囲を枠内に収めるか
+        # 枠の比率を保ったまま、切り抜くベースサイズを決める
+        max_base = min(img_w, int(img_h * aspect_ratio)) if aspect_ratio > 1 else min(int(img_w / aspect_ratio), img_h)
         
-        # 比率に応じて、切り抜きボックスの初期最大サイズを制限
-        if aspect_ratio > 1: # 横長の場合
-            max_crop_size = min(width, int(height * aspect_ratio))
-            crop_size = st.slider("① 切り抜く大きさを決める（拡大・縮小）", int(max_crop_size*0.2), max_crop_size, int(max_crop_size*0.8))
-            crop_w = crop_size
-            crop_h = int(crop_size / aspect_ratio)
-        else: # 縦長の場合
-            max_crop_size = min(int(width / aspect_ratio), height)
-            crop_size = st.slider("① 切り抜く大きさを決める（拡大・縮小）", int(max_crop_size*0.2), max_crop_size, int(max_crop_size*0.8))
-            crop_h = crop_size
-            crop_w = int(crop_size * aspect_ratio)
+        # スライダーで直感的に拡大率（切り抜き視野の広さ）を調整
+        zoom = st.slider("① 写真を拡大・縮小する（右に動かすと拡大、左に動かすと引いた写真になります）", 
+                         min_value=int(max_base * 0.1), max_value=max_base, value=int(max_base * 0.9), step=1)
+        
+        if aspect_ratio > 1:
+            crop_w = zoom
+            crop_h = int(zoom / aspect_ratio)
+        else:
+            crop_h = zoom
+            crop_w = int(zoom * aspect_ratio)
             
-        # 写真からはみ出さないための安全ガード
-        if crop_w > width:
-            crop_w = width
-            crop_h = int(width / aspect_ratio)
-        if crop_h > height:
-            crop_h = height
-            crop_w = int(height * aspect_ratio)
-            
-        max_x = max(0, width - crop_w)
-        max_y = max(0, height - crop_h)
+        # 2. 【位置調整】上下・左右をカットする位置の微調整
+        max_x = max(0, img_w - crop_w)
+        max_y = max(0, img_h - crop_h)
         
-        left = st.slider("② 左右の位置を動かす", 0, max_x, int(max_x / 2))
-        top = st.slider("③ 上下の位置を動かす", 0, max_y, int(max_y / 2))
+        left = st.slider("② 左右の位置をずらす（左右のカット位置調整）", 0, max_x, int(max_x / 2))
+        top = st.slider("③ 上下の位置をずらす（上下のカット位置調整）", 0, max_y, int(max_y / 2))
         
-        # プレビュー表示
+        # プレビュー画像の作成
         preview_img = img.copy()
         draw = ImageDraw.Draw(preview_img)
-        draw.rectangle([left, top, left + crop_w, top + crop_h], outline="#1E88E5", width=int(min_dim*0.01)+2)
+        # 切り抜かれる固定枠を青色の太線で描画
+        draw.rectangle([left, top, left + crop_w, top + crop_h], outline="#1E88E5", width=int(min(img_w, img_h)*0.01)+2)
         
         col_pre1, col_pre2 = st.columns(2)
         with col_pre1:
-            st.write("▼ 全体位置（青枠の中がカレンダーに入ります）")
+            st.write("▼ 全体図（青い枠線のエリアがカレンダーに残ります）")
             st.image(preview_img, use_container_width=True)
         with col_pre2:
-            st.write("▼ カレンダーへの配置プレビュー")
+            st.write("▼ カレンダーへの配置プレビュー（最終仕上がり）")
+            # 実際に指定枠の比率でカットされた画像
             cropped_img = img.crop([left, top, left + crop_w, top + crop_h])
             st.image(cropped_img, use_container_width=True)
             
@@ -125,7 +120,7 @@ if c_step == 1:
     st.markdown('</div>', unsafe_allow_html=True)
     
     if data["cropped_image"] is not None:
-        if st.button("OK：位置を決定して次へ ➔", use_container_width=True, type="primary"):
+        if st.button("OK：この配置で決定して次へ ➔", use_container_width=True, type="primary"):
             st.session_state.c_step = 2
             st.rerun()
 
@@ -136,9 +131,8 @@ elif c_step == 2:
     st.markdown('<div class="step-box">', unsafe_allow_html=True)
     st.subheader("📐 台紙デザインと作成枚数を選んでください")
     
-    # ステップ1の画像に合わせて選択肢を制限、または初期位置を変更
     if data["template"] == "C":
-        st.info("💡 縦型写真用に調整されたため、自動的に【台紙C】が選ばれています。")
+        st.info("💡 縦型枠（145mm×245mm）で調整されたため、自動的に【台紙C】が適用されています。")
         template_choice = st.radio("ご希望のデザイン：", ["C：シンプル・タテ型タイプ（タテ型）"])
     else:
         template_choice = st.radio(
@@ -155,11 +149,11 @@ elif c_step == 2:
     else:
         st.warning(f"⚠️ 倉庫に『{img_name}』が見つからないため、サンプルの案内文を表示しています。")
         if data["template"] == "A":
-            st.info("【台紙 A】ナチュラル・イラスト：横260mm×縦165mmの写真が配置されます")
+            st.info("【台紙 A】ナチュラル・イラスト：調整済みの横260mm×縦165mmの写真が配置されます")
         elif data["template"] == "B":
-            st.info("【台紙 B】アニマル・ポップ：横260mm×縦165mmの写真が配置されます")
+            st.info("【台紙 B】アニマル・ポップ：調整済みの横260mm×縦165mmの写真が配置されます")
         elif data["template"] == "C":
-            st.info("【台紙 C】シンプル・タテ型：横145mm×縦245mmの写真が配置されます")
+            st.info("【台紙 C】シンプル・タテ型：調整済みの横145mm×縦245mmの写真が配置されます")
         
     st.write("---")
     data["quantity"] = st.number_input("作成枚数 (冊)", min_value=1, max_value=100, value=data["quantity"], step=1)
@@ -167,7 +161,7 @@ elif c_step == 2:
     
     col1, col2 = st.columns(2)
     with col1:
-        if st.button("◀ 写真を選び直す", use_container_width=True):
+        if st.button("◀ 写真を調整し直す", use_container_width=True):
             st.session_state.c_step = 1
             st.rerun()
     with col2:
@@ -221,7 +215,7 @@ elif c_step == 4:
         st.write("**【お届け先】**")
         st.write(f"・お名前: {data['name']} 様")
         st.write(f"・住所: 〒{data['zip']} {data['address']}")
-        st.write(f"枠サイズ: {'260mm × 165mm' if data['template'] in ['A','B'] else '145mm × 245mm'}")
+        st.write(f"・印刷サイズ: {'260mm × 165mm' if data['template'] in ['A','B'] else '145mm × 245mm'}")
         
     st.markdown('</div>', unsafe_allow_html=True)
     
@@ -245,11 +239,11 @@ elif c_step == 5:
     st.markdown(f"""
     <div style="background-color: #ffffff; padding: 25px; border-radius: 8px; border: 1px solid #dcdcdc;">
         <h4>【重要】これからの流れについて</h4>
-        <p>ご入力いただいたメールアドレス（ <b>{data['email']}</b> ）宛てに、<b>お振込みいただく銀行口座の情報</b>を記載した自動案内メールをお送りいたしました。</p>
+        <p>ご入力いただいたメールアドレス（ <b>{data['email']}</b> ）宛てに, <b>お振込みいただく銀行口座の情報</b>を記載した自動案内メールをお送りいたしました。</p>
         <p>🚨 <b>【ご注意】</b><br>
-        商品の作成は、<b>ご入金が確認された後</b>に取り掛かります。</p>
+        商品の作成は, <b>ご入金が確認された後</b>に取り掛かります。</p>
         <p>📅 <b>お届けの目安</b><br>
-        ご入金確認後、約<b>7週間</b>でお手元に届きますので、楽しみにお待ちください。</p>
+        ご入金確認後, 約<b>7週間</b>でお手元に届きますので、楽しみにお待ちください。</p>
     </div>
     """, unsafe_allow_html=True)
     
