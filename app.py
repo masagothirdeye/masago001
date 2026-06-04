@@ -1,6 +1,7 @@
 import streamlit as st
 from PIL import Image, ImageDraw
 import os
+from streamlit_cropper import st_cropper # ✨ 追加パーツの読み込み
 
 # ページの初期設定
 st.set_page_config(page_title="オリジナルカレンダー注文", layout="centered")
@@ -39,7 +40,7 @@ st.progress(c_step / 5)
 st.write(f"**現在のステップ: {steps_names[c_step-1]}**")
 
 # =========================================================
-# 【ステップ 1】写真のアップロードと超多機能編集（回転・微傾き・フリーサイズ）
+# 【ステップ 1】写真のアップロードとスマホ対応トリミング
 # =========================================================
 if c_step == 1:
     st.markdown('<div class="step-box">', unsafe_allow_html=True)
@@ -56,7 +57,7 @@ if c_step == 1:
     </div>
     """, unsafe_allow_html=True)
     
-    # 🔘 自由度を上げるためのサイズ選択ボタン
+    # 🔘 比率選択ボタン
     photo_direction = st.radio(
         "切り抜き枠の比率を選んでください：",
         ["横型枠（260×165）", "縦型枠（145×245）", "自由なサイズ（フリー比率）"],
@@ -93,67 +94,41 @@ if c_step == 1:
         # 📐 スライダーによる「1度きざみ」の細かな数値角度調整
         fine_tune_angle = st.slider("✨ 細かな角度の微調整（傾き補正：-45度 〜 +45度）", -45, 45, 0, step=1)
         
-        # 角度微調整を適用（expand=Trueで端が切れないようにする）
         if fine_tune_angle != 0:
             rotated_img = rotated_base.rotate(-fine_tune_angle, expand=True, resample=Image.Resampling.BICUBIC)
         else:
             rotated_img = rotated_base
             
-        img_w, img_h = rotated_img.size
-        
         st.write("---")
-        st.markdown("### ✂️ 2. 写真のサイズと位置を調整する（トリミング）")
+        st.markdown("### ✂️ 2. 写真のサイズと位置を調整する")
+        st.info("💡 スマホの方は、写真の上の【青い枠の四隅】を触って広げたり、中を触って移動させてください。")
         
-        # 枠線（比率）の計算
+        # 枠線（比率）の設定
         if "横型枠" in photo_direction:
             aspect_ratio = 260 / 165
             data["photo_type"] = "横型"
-            # 固定比率の最大サイズ
-            crop_w = min(img_w, int(img_h * aspect_ratio))
-            crop_h = int(crop_w / aspect_ratio)
-            
-            max_x = max(0, img_w - crop_w)
-            max_y = max(0, img_h - crop_h)
-            left = st.slider("① 左右の位置をずらす", 0, max_x, int(max_x / 2)) if max_x > 0 else 0
-            top = st.slider("② 上下の位置をずらす", 0, max_y, int(max_y / 2)) if max_y > 0 else 0
-            
         elif "縦型枠" in photo_direction:
             aspect_ratio = 145 / 245
             data["photo_type"] = "縦型"
-            # 固定比率の最大サイズ
-            crop_h = min(img_h, int(img_w / aspect_ratio))
-            crop_w = int(crop_h * aspect_ratio)
-            
-            max_x = max(0, img_w - crop_w)
-            max_y = max(0, img_h - crop_h)
-            left = st.slider("① 左右の位置をずらす", 0, max_x, int(max_x / 2)) if max_x > 0 else 0
-            top = st.slider("② 上下の位置をずらす", 0, max_y, int(max_y / 2)) if max_y > 0 else 0
-            
         else:
-            # 💡 フリー比率の場合：お客様が自分で横幅と縦幅をバラバラに指定できる！
+            aspect_ratio = None # フリーサイズ
             data["photo_type"] = "フリーサイズ"
-            st.caption("スライダーを動かして、切り抜きたい「横の幅」と「縦の高さ」を自由に指定してください。")
             
-            crop_w = st.slider("① 切り抜く【横の幅】（サイズ縮小・拡大）", int(img_w * 0.1), img_w, int(img_w * 0.8))
-            crop_h = st.slider("② 切り抜く【縦の高さ】（サイズ縮小・拡大）", int(img_h * 0.1), img_h, int(img_h * 0.8))
-            
-            max_x = max(0, img_w - crop_w)
-            max_y = max(0, img_h - crop_h)
-            left = st.slider("③ 左右の位置をずらす", 0, max_x, int(max_x / 2)) if max_x > 0 else 0
-            top = st.slider("④ 上下の位置をずらす", 0, max_y, int(max_y / 2)) if max_y > 0 else 0
-            
-        # プレビュー画像の描画（青枠線）
-        preview_img = rotated_img.copy()
-        draw = ImageDraw.Draw(preview_img)
-        draw.rectangle([left, top, left + crop_w, top + crop_h], outline="#1E88E5", width=int(min(img_w, img_h)*0.015)+2)
+        # 🎨 スマホ対応のトリミング画面を表示（スライダーを廃止し、直接操作に変更）
+        cropped_img = st_cropper(
+            rotated_img,
+            realtime_update=True,
+            box_color='#1E88E5',
+            aspect_ratio=aspect_ratio
+        )
         
+        # プレビュー画像の表示
         col_pre1, col_pre2 = st.columns(2)
         with col_pre1:
-            st.write("▼ お写真全体（青枠のエリアがカレンダーに入ります）")
-            st.image(preview_img, use_container_width=True)
+            st.write("▼ 現在の切り抜きエリア調整画面")
+            # st_cropper自体が表示されるため、ここでは案内のみ
         with col_pre2:
             st.write("▼ 実際の印刷切り抜きイメージ")
-            cropped_img = rotated_img.crop([left, top, left + crop_w, top + crop_h])
             st.image(cropped_img, use_container_width=True)
             
             # データをセッションに格納
@@ -192,13 +167,11 @@ elif c_step == 2:
             bg_w, bg_h = base_bg.size
             user_pic = data["cropped_image"].copy()
             
-            # 写真のタイプによって、台紙にめり込ませるサイズを変更
             if data["photo_type"] == "横型":
                 fit_w, fit_h = 520, 330
             elif data["photo_type"] == "縦型":
                 fit_w, fit_h = 290, 490
             else:
-                # フリーサイズの場合は、縦横の比率を維持したまま、台紙に収まるように自動フィット
                 fre_w, fre_h = user_pic.size
                 ratio = min(500 / fre_w, 400 / fre_h)
                 fit_w, fit_h = int(fre_w * ratio), int(fre_h * ratio)
@@ -232,7 +205,7 @@ elif c_step == 2:
             st.rerun()
 
 # =========================================================
-# 【ステップ 3】お届け先情報（変更なし）
+# 【ステップ 3】お届け先情報
 # =========================================================
 elif c_step == 3:
     st.markdown('<div class="step-box">', unsafe_allow_html=True)
