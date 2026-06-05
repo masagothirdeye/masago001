@@ -116,12 +116,12 @@ if c_step == 1:
         st.markdown("""
         <div class="visual-guide">
             <p style="margin: 0 0 10px 0; font-size: 15px; font-weight: bold; color: #2c3e50; text-align: center;">
-                📱 【スマホ操作のご案内】下の赤い枠はこう動かせます
+                📱 【スマホ操作のご案内】
             </p>
             <div class="guide-box">
                 <span class="arrow-tl">↖</span>
                 <span class="arrow-tr">↗</span>
-                角のシカコ(⬜)を引っ張ると<br>サイズが広がる・縮む！
+                角の四角(⬜)を引っ張ると<br>サイズ調整が可能
                 <br><span style="font-size: 13px; font-weight: normal; color: #666;">（真ん中をさわると ⬅⬆➡⬇ 位置移動）</span>
                 <span class="arrow-bl">↙</span>
                 <span class="arrow-br">↘</span>
