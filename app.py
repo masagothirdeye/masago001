@@ -14,7 +14,30 @@ st.markdown("""
     .step-box { background-color: #ffffff; padding: 25px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px; }
     div.stButton > button { border-radius: 6px !important; font-weight: bold !important; height: 45px; }
     .notice-box { background-color: #fff3e0; border-left: 5px solid #ff9800; padding: 15px; border-radius: 4px; margin-bottom: 20px; }
-    .guide-card { background-color: #e3f2fd; border: 2px dashed #1e88e5; padding: 15px; border-radius: 8px; text-align: center; margin-bottom: 15px; }
+    
+    /* 📱 スマホで見やすい直感図解用のスタイル */
+    .visual-guide {
+        background-color: #ffffff;
+        border: 2px solid #FF0000;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    .guide-box {
+        border: 2px dashed #FF0000;
+        padding: 15px;
+        position: relative;
+        text-align: center;
+        background-color: #fff5f5;
+        font-weight: bold;
+        color: #c92a2a;
+        margin: 10px 0;
+    }
+    .arrow-tl { position: absolute; top: -10px; left: -10px; font-size: 20px; }
+    .arrow-tr { position: absolute; top: -10px; right: -10px; font-size: 20px; }
+    .arrow-bl { position: absolute; bottom: -10px; left: -10px; font-size: 20px; }
+    .arrow-br { position: absolute; bottom: -10px; right: -10px; font-size: 20px; }
     </style>
 """, unsafe_allow_html=True)
 
@@ -89,13 +112,19 @@ if c_step == 1:
         st.write("---")
         st.markdown("### ✂️ 2. 写真のサイズと位置を調整する")
         
-        # 💡 【視覚的強化】操作方法を矢印や記号を使って直感的に伝えるカード型案内ボード
+        # 💡 【直感図解ボード】実際の操作画面の形を模した、矢印付きの視覚案内
         st.markdown("""
-        <div class="guide-card">
-            <h4 style="color: #1e88e5; margin: 0 0 8px 0; font-size: 16px;">👇 下の「赤い枠」を指でさわって調整してね！</h4>
-            <div style="font-size: 14px; color: #333; line-height: 1.6;">
-                <b>【 大きさを変える 】</b> 四隅の ⬜ をつかんで <b>↖ ↗ ↙ ↘ 矢印の方向</b>に広げる<br>
-                <b>【 位置をうごかす 】</b> 赤い枠の真ん中あたりをさわって <b>⬅ ⬆ ➡ ⬇ 自由</b>に引きずる
+        <div class="visual-guide">
+            <p style="margin: 0 0 10px 0; font-size: 15px; font-weight: bold; color: #2c3e50; text-align: center;">
+                📱 【スマホ操作のご案内】下の赤い枠はこう動かせます
+            </p>
+            <div class="guide-box">
+                <span class="arrow-tl">↖</span>
+                <span class="arrow-tr">↗</span>
+                角のシカコ(⬜)を引っ張ると<br>サイズが広がる・縮む！
+                <br><span style="font-size: 13px; font-weight: normal; color: #666;">（真ん中をさわると ⬅⬆➡⬇ 位置移動）</span>
+                <span class="arrow-bl">↙</span>
+                <span class="arrow-br">↘</span>
             </div>
         </div>
         """, unsafe_allow_html=True)
@@ -110,7 +139,7 @@ if c_step == 1:
         
         col_pre1, col_pre2 = st.columns(2)
         with col_pre1:
-            st.write("上の水色の案内を参考に、枠を調整してください 👆")
+            st.write("上の図解を参考に、実際の枠を調整してください 👆")
         with col_pre2:
             st.write("▼ 実際の印刷切り抜きイメージ")
             st.image(cropped_img, use_container_width=True)
@@ -253,7 +282,7 @@ elif c_step == 5:
         <h4>【重要】これからの流れについて</h4>
         <p>ご入力いただいたメールアドレス（ <b>{data['email']}</b> ）宛てに、<b>お振込みいただく銀行口座の情報</b>を記載した自動案内メールをお送りいたしました。</p>
         <p>🚨 <b>【ご注意】</b><br>
-        商品の作成は、<b>ご入金が確認された後</b>に取り換かります。</p>
+        商品の作成は、<b>ご入金が確認された後</b>に取り掛かります。</p>
         <p>📅 <b>お届けの目安</b><br>
         ご入金確認後、約<b>7週間</b>でお手元に届きますので、楽しみにお待ちください。</p>
     </div>
