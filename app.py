@@ -15,29 +15,37 @@ st.markdown("""
     div.stButton > button { border-radius: 6px !important; font-weight: bold !important; height: 45px; }
     .notice-box { background-color: #fff3e0; border-left: 5px solid #ff9800; padding: 15px; border-radius: 4px; margin-bottom: 20px; }
     
-    /* 📱 スマホで見やすい直感図解用のスタイル */
-    .visual-guide {
-        background-color: #ffffff;
-        border: 2px solid #FF0000;
-        border-radius: 8px;
-        padding: 15px;
-        margin-bottom: 20px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    /* 📱 【進化版】スマホで一瞬で伝わるリアル図解スタイル */
+    .visual-guide-card {
+        background-color: #e8f4fd;
+        border: 2px solid #1e88e5;
+        border-radius: 12px;
+        padding: 18px;
+        margin-bottom: 25px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.08);
     }
-    .guide-box {
-        border: 2px dashed #FF0000;
-        padding: 15px;
+    .guide-display-frame {
+        border: 3px solid #FF0000;
+        padding: 20px 10px;
         position: relative;
         text-align: center;
-        background-color: #fff5f5;
+        background-color: #ffffff;
         font-weight: bold;
-        color: #c92a2a;
-        margin: 10px 0;
+        color: #2c3e50;
+        margin: 20px auto;
+        max-width: 320px;
+        border-radius: 4px;
     }
-    .arrow-tl { position: absolute; top: -10px; left: -10px; font-size: 20px; }
-    .arrow-tr { position: absolute; top: -10px; right: -10px; font-size: 20px; }
-    .arrow-bl { position: absolute; bottom: -10px; left: -10px; font-size: 20px; }
-    .arrow-br { position: absolute; bottom: -10px; right: -10px; font-size: 20px; }
+    /* 四隅のリアルな「白四角＋外側の赤マル矢印」の再現 */
+    .corner-marker-tl { position: absolute; top: -8px; left: -8px; background: white; border: 1px solid #333; width: 14px; height: 14px; }
+    .corner-marker-tr { position: absolute; top: -8px; right: -8px; background: white; border: 1px solid #333; width: 14px; height: 14px; }
+    .corner-marker-bl { position: absolute; bottom: -8px; left: -8px; background: white; border: 1px solid #333; width: 14px; height: 14px; }
+    .corner-marker-br { position: absolute; bottom: -8px; right: -8px; background: white; border: 1px solid #333; width: 14px; height: 14px; }
+    
+    .action-arrow-tl { position: absolute; top: -28px; left: -28px; font-size: 26px; color: #FF0000; font-weight: 900; }
+    .action-arrow-tr { position: absolute; top: -28px; right: -28px; font-size: 26px; color: #FF0000; font-weight: 900; }
+    .action-arrow-bl { position: absolute; bottom: -28px; left: -28px; font-size: 26px; color: #FF0000; font-weight: 900; }
+    .action-arrow-br { position: absolute; bottom: -28px; right: -28px; font-size: 26px; color: #FF0000; font-weight: 900; }
     </style>
 """, unsafe_allow_html=True)
 
@@ -112,19 +120,31 @@ if c_step == 1:
         st.write("---")
         st.markdown("### ✂️ 2. 写真のサイズと位置を調整する")
         
-        # 💡 【直感図解ボード】実際の操作画面の形を模した、矢印付きの視覚案内
+        # 💡 【超・直感図解ボード】実際の画面を完全再現し、赤マル矢印で誘導する案内
         st.markdown("""
-        <div class="visual-guide">
-            <p style="margin: 0 0 10px 0; font-size: 15px; font-weight: bold; color: #2c3e50; text-align: center;">
-                📱 【スマホ操作のご案内】
+        <div class="visual-guide-card">
+            <p style="margin: 0 0 5px 0; font-size: 16px; font-weight: bold; color: #1e88e5; text-align: center;">
+                📱 【かんたん操作ガイド】
             </p>
-            <div class="guide-box">
-                <span class="arrow-tl">↖</span>
-                <span class="arrow-tr">↗</span>
-                角の四角(⬜)を引っ張ると<br>サイズ調整が可能
-                <br><span style="font-size: 13px; font-weight: normal; color: #666;">（真ん中をさわると ⬅⬆➡⬇ 位置移動）</span>
-                <span class="arrow-bl">↙</span>
-                <span class="arrow-br">↘</span>
+            <p style="margin: 0 0 15px 0; font-size: 14px; color: #455a64; text-align: center; line-height: 1.4;">
+                下の写真に表示されている<b>「赤い枠」</b>は、指で自由に大きさを変えられます！
+            </p>
+            
+            <div class="guide-display-frame">
+                <div class="corner-marker-tl"></div>
+                <div class="corner-marker-tr"></div>
+                <div class="corner-marker-bl"></div>
+                <div class="corner-marker-br"></div>
+                
+                <div class="action-arrow-tl">🔴↖</div>
+                <div class="action-arrow-tr">↗🔴</div>
+                <div class="action-arrow-bl">🔴↙</div>
+                <div class="action-arrow-br">↘🔴</div>
+                
+                <span style="font-size: 16px; color: #FF0000;">四隅の「白い四角」をつかんで<br>外側や内側にスライドさせると<br>サイズが変わります！</span>
+                <p style="font-size: 13px; font-weight: normal; color: #555; margin: 10px 0 0 0; padding-top: 8px; border-top: 1px dashed #ddd;">
+                    ※真ん中あたりをさわると、上下左右に位置をうごかせます。
+                </p>
             </div>
         </div>
         """, unsafe_allow_html=True)
@@ -139,7 +159,7 @@ if c_step == 1:
         
         col_pre1, col_pre2 = st.columns(2)
         with col_pre1:
-            st.write("上の図解を参考に、実際の枠を調整してください 👆")
+            st.write("上のガイドを見ながら、実際の赤い枠を調整してね！ 👆")
         with col_pre2:
             st.write("▼ 実際の印刷切り抜きイメージ")
             st.image(cropped_img, use_container_width=True)
