@@ -8,45 +8,44 @@ st.set_page_config(page_title="オリジナルカレンダー注文", layout="ce
 
 # 🎨 デザイン（CSS）
 st.markdown("""
-    <style>
-    .stApp { background-color: #f7f9fa; }
-    h1, h2, h3 { color: #2c3e50 !important; font-weight: 700; }
-    .step-box { background-color: #ffffff; padding: 25px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px; }
-    div.stButton > button { border-radius: 6px !important; font-weight: bold !important; height: 45px; }
-    .notice-box { background-color: #fff3e0; border-left: 5px solid #ff9800; padding: 15px; border-radius: 4px; margin-bottom: 20px; }
-    
-    /* 📱 スマホで一瞬で伝わるリアル図解スタイル */
-    .visual-guide-card {
-        background-color: #e8f4fd;
-        border: 2px solid #1e88e5;
-        border-radius: 12px;
-        padding: 18px;
-        margin-bottom: 25px;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.08);
-    }
-    .guide-display-frame {
-        border: 3px solid #FF0000;
-        padding: 20px 10px;
-        position: relative;
-        text-align: center;
-        background-color: #ffffff;
-        font-weight: bold;
-        color: #2c3e50;
-        margin: 20px auto;
-        max-width: 320px;
-        border-radius: 4px;
-    }
-    /* 四隅のリアルな「白四角＋外側の赤マル矢印」の再現 */
-    .corner-marker-tl { position: absolute; top: -8px; left: -8px; background: white; border: 1px solid #333; width: 14px; height: 14px; }
-    .corner-marker-tr { position: absolute; top: -8px; right: -8px; background: white; border: 1px solid #333; width: 14px; height: 14px; }
-    .corner-marker-bl { position: absolute; bottom: -8px; left: -8px; background: white; border: 1px solid #333; width: 14px; height: 14px; }
-    .corner-marker-br { position: absolute; bottom: -8px; right: -8px; background: white; border: 1px solid #333; width: 14px; height: 14px; }
-    
-    .action-arrow-tl { position: absolute; top: -28px; left: -28px; font-size: 26px; color: #FF0000; font-weight: 900; }
-    .action-arrow-tr { position: absolute; top: -28px; right: -28px; font-size: 26px; color: #FF0000; font-weight: 900; }
-    .action-arrow-bl { position: absolute; bottom: -28px; left: -28px; font-size: 26px; color: #FF0000; font-weight: 900; }
-    .action-arrow-br { position: absolute; bottom: -28px; right: -28px; font-size: 26px; color: #FF0000; font-weight: 900; }
-    </style>
+<style>
+.stApp { background-color: #f7f9fa; }
+h1, h2, h3 { color: #2c3e50 !important; font-weight: 700; }
+.step-box { background-color: #ffffff; padding: 25px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px; }
+div.stButton > button { border-radius: 6px !important; font-weight: bold !important; height: 45px; }
+.notice-box { background-color: #fff3e0; border-left: 5px solid #ff9800; padding: 15px; border-radius: 4px; margin-bottom: 20px; }
+
+/* スマホ用リアル図解スタイル */
+.visual-guide-card {
+    background-color: #e8f4fd;
+    border: 2px solid #1e88e5;
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+}
+.guide-display-frame {
+    border: 3px solid #FF0000;
+    padding: 15px 10px;
+    position: relative;
+    text-align: center;
+    background-color: #ffffff;
+    font-weight: bold;
+    color: #2c3e50;
+    margin: 15px auto;
+    max-width: 300px;
+    border-radius: 4px;
+}
+.corner-marker-tl { position: absolute; top: -8px; left: -8px; background: white; border: 1px solid #333; width: 14px; height: 14px; }
+.corner-marker-tr { position: absolute; top: -8px; right: -8px; background: white; border: 1px solid #333; width: 14px; height: 14px; }
+.corner-marker-bl { position: absolute; bottom: -8px; left: -8px; background: white; border: 1px solid #333; width: 14px; height: 14px; }
+.corner-marker-br { position: absolute; bottom: -8px; right: -8px; background: white; border: 1px solid #333; width: 14px; height: 14px; }
+
+.action-arrow-tl { position: absolute; top: -25px; left: -25px; font-size: 24px; color: #FF0000; font-weight: bold; }
+.action-arrow-tr { position: absolute; top: -25px; right: -25px; font-size: 24px; color: #FF0000; font-weight: bold; }
+.action-arrow-bl { position: absolute; bottom: -25px; left: -25px; font-size: 24px; color: #FF0000; font-weight: bold; }
+.action-arrow-br { position: absolute; bottom: -25px; right: -25px; font-size: 24px; color: #FF0000; font-weight: bold; }
+</style>
 """, unsafe_allow_html=True)
 
 st.title("📅 オリジナルカレンダー作成・注文")
@@ -120,34 +119,8 @@ if c_step == 1:
         st.write("---")
         st.markdown("### ✂️ 2. 写真のサイズと位置を調整する")
         
-        # 💡 バグの原因になっていたコメントアウトを完全に削除しました！
-        st.markdown("""
-        <div class="visual-guide-card">
-            <p style="margin: 0 0 5px 0; font-size: 16px; font-weight: bold; color: #1e88e5; text-align: center;">
-                📱 【かんたん操作ガイド】
-            </p>
-            <p style="margin: 0 0 15px 0; font-size: 14px; color: #455a64; text-align: center; line-height: 1.4;">
-                下の写真に表示されている<b>「赤い枠」</b>は、指で自由に大きさを変えられます！
-            </p>
-            
-            <div class="guide-display-frame">
-                <div class="corner-marker-tl"></div>
-                <div class="corner-marker-tr"></div>
-                <div class="corner-marker-bl"></div>
-                <div class="corner-marker-br"></div>
-                
-                <div class="action-arrow-tl">🔴↖</div>
-                <div class="action-arrow-tr">↗🔴</div>
-                <div class="action-arrow-bl">🔴↙</div>
-                <div class="action-arrow-br">↘🔴</div>
-                
-                <span style="font-size: 16px; color: #FF0000;">四隅の「白い四角」をつかんで<br>外側や内側にスライドさせると<br>サイズが変わります！</span>
-                <p style="font-size: 13px; font-weight: normal; color: #555; margin: 10px 0 0 0; padding-top: 8px; border-top: 1px dashed #ddd;">
-                    ※真ん中あたりをさわると、上下左右に位置をうごかせます。
-                </p>
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
+        # 💡 バグの元になる改行やインデントを徹底排除した超安全なHTML記述に変更しました
+        st.markdown('<div class="visual-guide-card"><p style="margin:0 0 5px 0;font-size:16px;font-weight:bold;color:#1e88e5;text-align:center;">📱 【かんたん操作ガイド】</p><p style="margin:0 0 15px 0;font-size:14px;color:#455a64;text-align:center;line-height:1.4;">下の写真に表示されている<b>「赤い枠」</b>は、指で自由に大きさを変えられます！</p><div class="guide-display-frame"><div class="corner-marker-tl"></div><div class="corner-marker-tr"></div><div class="corner-marker-bl"></div><div class="corner-marker-br"></div><div class="action-arrow-tl">🔴↖</div><div class="action-arrow-tr">↗🔴</div><div class="action-arrow-bl">🔴↙</div><div class="action-arrow-br">↘🔴</div><span style="font-size:16px;color:#FF0000;">四隅の「白い四角」をつかんで<br>外側や内側にスライドさせると<br>サイズが変わります！</span><p style="font-size:13px;font-weight:normal;color:#555;margin:10px 0 0 0;padding-top:8px;border-top:1px dashed #ddd;">※真ん中あたりをさわると、上下左右に位置をうごかせます。</p></div></div>', unsafe_allow_html=True)
         
         # トリミング画面を表示
         cropped_img = st_cropper(
