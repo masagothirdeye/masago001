@@ -6,49 +6,77 @@ from streamlit_cropper import st_cropper
 # ページの初期設定
 st.set_page_config(page_title="オリジナルカレンダー注文", layout="centered")
 
-# 🎨 【ボタン色完全リニューアル版】デザイン（CSS）
+# 🎨 【ラベンダー背景＆白ボックス黒フチ完全固定版】デザイン（CSS）
 st.markdown("""
 <style>
-/* アプリ全体の背景と基本の文字色を強制固定 */
+/* 🔑 アプリ全体の背景を優しいラベンダー色に強制固定 */
 .stApp { 
-    background-color: #87cefa !important; 
+    background-color: #e6e6fa !important; 
     color: #000000 !important; 
 }
 
-/* 各種見出しや文字を真っ黒に固定 */
+/* 各種見出しや基本の文字を真っ黒に固定 */
 h1, h2, h3, h4, h5, h6, span, p, label, .stText { 
     color: #000000 !important; 
 }
 
-/* ステップBOXの背景（白） */
+/* 🔑 ステップBOXの背景（白） */
 .step-box { 
     background-color: #ffffff !important; 
     color: #000000 !important;
     padding: 25px; 
     border-radius: 10px; 
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1); 
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05); 
     margin-bottom: 20px; 
 }
 .step-box h1, .step-box h2, .step-box h3, .step-box p, .step-box label {
     color: #000000 !important;
 }
 
-/* ファイルアップローダー内の文字化け対策 */
+/* 🔑 【最重要】名前入力・枚数選択などの入力エリアを「白背景・黒フチ・黒文字」に強制固定 */
+div[data-testid="stTextInput"] input, 
+div[data-testid="stNumberInput"] input,
+div[data-baseweb="input"] {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+    border: 2px solid #000000 !important;
+    border-radius: 6px !important;
+}
+
+/* 数字入力のプラス・マイナスボタンの調整 */
+div[data-testid="stNumberInput"] button {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+    border: 1px solid #000000 !important;
+}
+
+/* ラジオボタン（台紙選択）の文字化け・色化け対策 */
+div[data-testid="stRadio"] label p {
+    color: #000000 !important;
+}
+
+/* 🔑 ファイルアップローダー部分を「白BOX・黒フチ」に固定 */
 div[data-testid="stFileUploader"] section {
     background-color: #ffffff !important;
     color: #000000 !important;
-    border: 2px dashed #333333 !important;
+    border: 2px dashed #000000 !important;
+}
+/* アップローダー内のボタンと文字色 */
+div[data-testid="stFileUploader"] button {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+    border: 2px solid #000000 !important;
 }
 div[data-testid="stFileUploader"] label p {
     color: #000000 !important;
 }
 div[data-testid="stFileUploader"] div[data-testid="stMarkdownContainer"] p {
-    color: #333333 !important;
+    color: #000000 !important;
 }
 
-/* ＝★＝★＝ ボタンのカラーカスタマイズ ＝★＝★＝ */
+/* ＝★＝ ボタンのカラーカスタマイズ（継続） ＝★＝ */
 
-/* ① 【次へ・確定（主要なボタン）】の指定：オレンジ (#ffa500) */
+/* ① 【次へ・確定】の指定：オレンジ (#ffa500) */
 div.stButton > button[kind="primary"] {
     background-color: #ffa500 !important;
     color: #000000 !important;
@@ -58,14 +86,12 @@ div.stButton > button[kind="primary"] {
     height: 45px;
     transition: all 0.2s ease;
 }
-/* カーソルが当たった（ホバー）・タップした時は少し濃いオレンジへ */
-div.stButton > button[kind="primary"]:hover, div.stButton > button[kind="primary"]:active {
+div.stButton > button[kind="primary"]:hover {
     background-color: #e69500 !important;
     color: #000000 !important;
-    border-color: #cc8000 !important;
 }
 
-/* ② 【戻る・リセット（標準のボタン）】の指定：薄緑 (#98fb98) */
+/* ② 【戻る・回転など】の指定：薄緑 (#98fb98) */
 div.stButton > button[kind="secondary"] {
     background-color: #98fb98 !important;
     color: #000000 !important;
@@ -75,11 +101,9 @@ div.stButton > button[kind="secondary"] {
     height: 45px;
     transition: all 0.2s ease;
 }
-/* カーソルが当たった（ホバー）・タップした時は少し濃い薄緑へ */
-div.stButton > button[kind="secondary"]:hover, div.stButton > button[kind="secondary"]:active {
+div.stButton > button[kind="secondary"]:hover {
     background-color: #82e282 !important;
     color: #000000 !important;
-    border-color: #69c069 !important;
 }
 
 /* スマホ用リアル図解スタイル */
@@ -105,12 +129,8 @@ div.stButton > button[kind="secondary"]:hover, div.stButton > button[kind="secon
     max-width: 300px;
     border-radius: 4px;
 }
-.guide-display-frame span {
-    color: #FF0000 !important;
-}
-.guide-display-frame p {
-    color: #555555 !important;
-}
+.guide-display-frame span { color: #FF0000 !important; }
+.guide-display-frame p { color: #555555 !important; }
 
 .corner-marker-tl { position: absolute; top: -8px; left: -8px; background: white !important; border: 1px solid #333 !important; width: 14px; height: 14px; }
 .corner-marker-tr { position: absolute; top: -8px; right: -8px; background: white !important; border: 1px solid #333 !important; width: 14px; height: 14px; }
@@ -314,7 +334,7 @@ elif c_step == 4:
     
     col_img, col_info = st.columns([1, 1])
     with col_img:
-        st.write("**【配置する写真（トリミング済）**】")
+        st.write("**【配置する写真（トリミング済）】**")
         if data["cropped_image"]:
             st.image(data["cropped_image"], use_container_width=True)
     with col_info:
