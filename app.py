@@ -15,7 +15,7 @@ st.markdown("""
     div.stButton > button { border-radius: 6px !important; font-weight: bold !important; height: 45px; }
     .notice-box { background-color: #fff3e0; border-left: 5px solid #ff9800; padding: 15px; border-radius: 4px; margin-bottom: 20px; }
     
-    /* 📱 【進化版】スマホで一瞬で伝わるリアル図解スタイル */
+    /* 📱 スマホで一瞬で伝わるリアル図解スタイル */
     .visual-guide-card {
         background-color: #e8f4fd;
         border: 2px solid #1e88e5;
@@ -120,7 +120,7 @@ if c_step == 1:
         st.write("---")
         st.markdown("### ✂️ 2. 写真のサイズと位置を調整する")
         
-        # 💡 【超・直感図解ボード】実際の画面を完全再現し、赤マル矢印で誘導する案内
+        # 💡 バグの原因になっていたコメントアウトを完全に削除しました！
         st.markdown("""
         <div class="visual-guide-card">
             <p style="margin: 0 0 5px 0; font-size: 16px; font-weight: bold; color: #1e88e5; text-align: center;">
