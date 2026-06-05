@@ -6,21 +6,21 @@ from streamlit_cropper import st_cropper
 # ページの初期設定
 st.set_page_config(page_title="オリジナルカレンダー注文", layout="centered")
 
-# 🎨 【スマホ色化け対策版】デザイン（CSS）
+# 🎨 【ボタン色完全リニューアル版】デザイン（CSS）
 st.markdown("""
 <style>
-/* 🔑 アプリ全体の背景と基本の文字色を強制固定 */
+/* アプリ全体の背景と基本の文字色を強制固定 */
 .stApp { 
     background-color: #87cefa !important; 
     color: #000000 !important; 
 }
 
-/* 🔑 タイトル、サブタイトル、見出しをすべて真っ黒に固定 */
+/* 各種見出しや文字を真っ黒に固定 */
 h1, h2, h3, h4, h5, h6, span, p, label, .stText { 
     color: #000000 !important; 
 }
 
-/* 🔑 ステップBOXの背景（白）と中の文字色を固定 */
+/* ステップBOXの背景（白） */
 .step-box { 
     background-color: #ffffff !important; 
     color: #000000 !important;
@@ -33,7 +33,7 @@ h1, h2, h3, h4, h5, h6, span, p, label, .stText {
     color: #000000 !important;
 }
 
-/* 🔑 ファイルアップローダー内の文字化け対策 */
+/* ファイルアップローダー内の文字化け対策 */
 div[data-testid="stFileUploader"] section {
     background-color: #ffffff !important;
     color: #000000 !important;
@@ -46,11 +46,40 @@ div[data-testid="stFileUploader"] div[data-testid="stMarkdownContainer"] p {
     color: #333333 !important;
 }
 
-/* ボタンのデザイン */
-div.stButton > button { 
+/* ＝★＝★＝ ボタンのカラーカスタマイズ ＝★＝★＝ */
+
+/* ① 【次へ・確定（主要なボタン）】の指定：オレンジ (#ffa500) */
+div.stButton > button[kind="primary"] {
+    background-color: #ffa500 !important;
+    color: #000000 !important;
+    border: 2px solid #e09000 !important;
     border-radius: 6px !important; 
     font-weight: bold !important; 
-    height: 45px; 
+    height: 45px;
+    transition: all 0.2s ease;
+}
+/* カーソルが当たった（ホバー）・タップした時は少し濃いオレンジへ */
+div.stButton > button[kind="primary"]:hover, div.stButton > button[kind="primary"]:active {
+    background-color: #e69500 !important;
+    color: #000000 !important;
+    border-color: #cc8000 !important;
+}
+
+/* ② 【戻る・リセット（標準のボタン）】の指定：薄緑 (#98fb98) */
+div.stButton > button[kind="secondary"] {
+    background-color: #98fb98 !important;
+    color: #000000 !important;
+    border: 2px solid #7ecc7e !important;
+    border-radius: 6px !important; 
+    font-weight: bold !important; 
+    height: 45px;
+    transition: all 0.2s ease;
+}
+/* カーソルが当たった（ホバー）・タップした時は少し濃い薄緑へ */
+div.stButton > button[kind="secondary"]:hover, div.stButton > button[kind="secondary"]:active {
+    background-color: #82e282 !important;
+    color: #000000 !important;
+    border-color: #69c069 !important;
 }
 
 /* スマホ用リアル図解スタイル */
@@ -139,15 +168,15 @@ if c_step == 1:
         
         col_rot1, col_rot2, col_rot3 = st.columns(3)
         with col_rot1:
-            if st.button("↩️ 左に90度回転", use_container_width=True):
+            if st.button("↩️ 左に90度回転", use_container_width=True, type="secondary"):
                 st.session_state.base_rotation = (st.session_state.base_rotation + 90) % 360
                 st.rerun()
         with col_rot2:
-            if st.button("↪️ 右に90度回転", use_container_width=True):
+            if st.button("↪️ 右に90度回転", use_container_width=True, type="secondary"):
                 st.session_state.base_rotation = (st.session_state.base_rotation - 90) % 360
                 st.rerun()
         with col_rot3:
-            if st.button("🔄 向きをリセット", use_container_width=True):
+            if st.button("🔄 向きをリセット", use_container_width=True, type="secondary"):
                 st.session_state.base_rotation = 0
                 st.rerun()
                 
@@ -242,7 +271,7 @@ elif c_step == 2:
     
     col1, col2 = st.columns(2)
     with col1:
-        if st.button("◀ 写真を調整し直す", use_container_width=True):
+        if st.button("◀ 写真を調整し直す", use_container_width=True, type="secondary"):
             st.session_state.c_step = 1
             st.rerun()
     with col2:
@@ -268,7 +297,7 @@ elif c_step == 3:
     
     col1, col2 = st.columns(2)
     with col1:
-        if st.button("◀ 戻る", use_container_width=True):
+        if st.button("◀ 戻る", use_container_width=True, type="secondary"):
             st.session_state.c_step = 2
             st.rerun()
     with col2:
@@ -285,7 +314,7 @@ elif c_step == 4:
     
     col_img, col_info = st.columns([1, 1])
     with col_img:
-        st.write("**【配置する写真（トリミング済）】**")
+        st.write("**【配置する写真（トリミング済）**】")
         if data["cropped_image"]:
             st.image(data["cropped_image"], use_container_width=True)
     with col_info:
@@ -302,7 +331,7 @@ elif c_step == 4:
     
     col1, col2 = st.columns(2)
     with col1:
-        if st.button("◀ 修正する", use_container_width=True):
+        if st.button("◀ 修正する", use_container_width=True, type="secondary"):
             st.session_state.c_step = 3
             st.rerun()
     with col2:
@@ -322,13 +351,13 @@ elif c_step == 5:
         <h4 style="color: #000000;">【重要】これからの流れについて</h4>
         <p>ご入力いただいたメールアドレス（ <b>{data['email']}</b> ）宛てに、<b>お振込みいただく銀行口座の情報</b>を記載した自動案内メールをお送りいたしました。</p>
         <p>🚨 <b>【ご注意】</b><br>
-        商品の作成は、<b>ご入金が確認された後</b>に取り獲かります。</p>
+        商品の作成は、<b>ご入金が確認された後</b>に取り掛かります。</p>
         <p>📅 <b>お届けの目安</b><br>
         ご入金確認後、約<b>7週間</b>でお手元に届きますので、楽しみにお待ちください。</p>
     </div>
     """, unsafe_allow_html=True)
     
-    if st.button("🔄 トップへ戻る", use_container_width=True):
+    if st.button("🔄 トップへ戻る", use_container_width=True, type="secondary"):
         st.session_state.c_step = 1
         st.session_state.base_rotation = 0
         st.session_state.order_data = {
